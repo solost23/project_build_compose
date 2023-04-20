@@ -1,0 +1,45 @@
+version: "3.5"
+
+services:
+  twitta:
+    image: "hy6w/twitta:v1.0.0"
+    restart: always
+    ports:
+      - "6565:6565"
+    volumes:
+      - "$PWD/configs/twitta:/configs"
+      - "$PWD/logs/twitta:/logs"
+      - "$PWD/certs/twitta:/etc/ssl/certs/"
+    networks:
+      - app_net
+
+  es_service:
+    image: "hy6w/es_service:v1.0.0"
+    restart: always
+    volumes:
+      - "$PWD/configs/es_service:/configs"
+      - "$PWD/certs/es_service:/etc/ssl/certs/"
+    networks:
+      - app_net
+
+  push_service:
+    image: "hy6w/push_service:v1.0.0"
+    restart: always
+    volumes:
+      - "$PWD/configs/push_service:/configs"
+      - "$PWD/certs/push_service:/etc/ssl/certs/"
+    networks:
+      - app_net 
+
+  oss_service:
+    image: "hy6w/oss_service:v1.0.0"
+    restart: always
+    volumes:
+      - "$PWD/configs/oss_service:/configs"
+      - "$PWD/certs/oss_service:/etc/ssl/certs/"
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    external: true
