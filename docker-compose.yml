@@ -5,7 +5,7 @@ services:
     image: "hy6w/twitta:v1.0.0"
     restart: always
     ports:
-      - "6565:6565"
+      - "8081:8081"
     volumes:
       - "$PWD/configs/twitta:/configs"
       - "$PWD/logs/twitta:/logs"
@@ -23,7 +23,7 @@ services:
       - app_net
 
   push_service:
-    image: "hy6w/push_service:v1.0.0"
+    image: "hy6w/push_service:v1.0.1"
     restart: always
     volumes:
       - "$PWD/configs/push_service:/configs"
