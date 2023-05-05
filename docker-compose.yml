@@ -29,7 +29,9 @@ services:
       - "$PWD/configs/push_service:/configs"
       - "$PWD/certs/push_service:/etc/ssl/certs/"
     networks:
-      - app_net 
+      - app_net
+    depends_on:
+      - mariadb
 
   oss_service:
     image: "hy6w/oss_service:v1.0.0"
@@ -37,6 +39,74 @@ services:
     volumes:
       - "$PWD/configs/oss_service:/configs"
       - "$PWD/certs/oss_service:/etc/ssl/certs/"
+    networks:
+      - app_net
+
+  consul-server:
+    image: consul:1.13.3
+    container_name: consul-server
+    restart: always
+    environment:
+      TZ: "Asia/Shanghai"
+    ports:
+      - "8500:8500"
+    volumes:
+      - "$PWD/consul/conf:/consul/conf"
+      - "$PWD/consul/data:/consul/data"
+    entrypoint: consul agent -server -bootstrap-expect=1 -ui -bind=0.0.0.0 -client=0.0.0.0 -data-dir=/consul/data
+    networks:
+      - app_net
+
+  mariadb:
+    image: mariadb:10.5.5
+    container_name: mariadb
+    restart: always
+    environment:
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "123"
+      MYSQL_ROOT_PASSWORD: "123"
+      TZ: "Asia/Shanghai"
+    ports:
+      - "3306:3306"
+    volumes:
+      - "$PWD/mariadb/data:/var/lib/mysql"
+      - "$PWD/mariadb/log:/var/log/mysql"
+      - "$PWD/mariadb/conf:/etc/mysql"
+    networks:
+      - app_net
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - app_net
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - app_net
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
+    environment:
+      MINIO_ROOT_USER: "minioadmin"
+      MINIO_ROOT_PASSWORD: "minioadmin"
+    ports:
+      - "9090:9090"
+      - "9001:9001"
+    volumes:
+      - "$PWD/minio/data1:/data1"
+      - "$PWD/minio/data2:/data2"
+      - "/etc/localtime:/etc/localtime"
     networks:
       - app_net
 
